@@ -37,7 +37,11 @@ function renderTasks() {
     return mf && ms;
   });
   board.innerHTML = '';
-  if (filtered.length === 0) { emptyMsg.classList.add('visible'); return; }
+  if (filtered.length === 0) {
+    emptyMsg.classList.add('visible');
+    updateStats();
+    return;
+  }
   emptyMsg.classList.remove('visible');
   const order = {high:0,medium:1,low:2};
   filtered.sort((a,b) => order[a.priority] - order[b.priority]);
@@ -53,7 +57,10 @@ function createCard(task) {
   const bl = {todo:'To-Do',inprogress:'In Progress',done:'Done'}[task.status];
   let dueHTML = '';
   if (task.due) {
-    const over = !isDone && new Date(task.due) < new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dueDate = new Date(`${task.due}T00:00:00`);
+    const over = !isDone && dueDate < today;
     dueHTML = `<span class="due-date ${over?'overdue':''}">📅 ${formatDate(task.due)}</span>`;
   }
   card.innerHTML = `
